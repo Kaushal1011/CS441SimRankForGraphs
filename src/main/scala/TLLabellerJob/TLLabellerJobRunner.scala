@@ -36,7 +36,7 @@ object TLLabellerJobRunner {
     job.setOutputValueClass(classOf[Text])
 
     // Input format for the first mapper
-    MultipleInputs.addInputPath(job, inputPath1, classOf[TextInputFormat], classOf[NodeLabellerForward])
+    MultipleInputs.addInputPath(job, inputPath1, classOf[TextInputFormat], classOf[TLLabellerForward])
 
     // Input format for the second mapper
     MultipleInputs.addInputPath(job, inputPath2, classOf[TextInputFormat], classOf[TLLabellerReverse])

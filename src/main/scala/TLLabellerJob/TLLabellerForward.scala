@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.lib.join.CompositeInputFormat
 import org.apache.hadoop.mapreduce.{Job, Mapper, Reducer}
 import org.apache.hadoop.conf.Configuration
 
-  class NodeLabellerForward extends Mapper[LongWritable, Text, Text, Text] {
+  class TLLabellerForward extends Mapper[LongWritable, Text, Text, Text] {
 
     private val logger: Logger = LoggerFactory.getLogger(classOf[TLLabellerCombinedReducer])
     override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, Text]#Context): Unit = {

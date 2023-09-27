@@ -14,6 +14,7 @@ val typesafeConfigVersion = "1.4.1"
 val apacheCommonIOVersion = "2.11.0"
 val scalacticVersion = "3.2.9"
 val hadoopVersion = "3.2.1"
+val snakeyamlVersion = "2.1"
 
 lazy val commonDependencies = Seq(
   "org.scala-lang.modules" %% "scala-parallel-collections" % scalaParCollVersion,
@@ -27,6 +28,8 @@ lazy val commonDependencies = Seq(
   "org.apache.hadoop" % "hadoop-common" % hadoopVersion,
   "org.apache.hadoop" % "hadoop-client" % hadoopVersion,
   "org.scalactic" %% "scalactic" % scalacticVersion,
+  "org.yaml" % "snakeyaml" % snakeyamlVersion,
+
 )
 
 resolvers += Resolver.jcenterRepo

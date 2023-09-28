@@ -3,6 +3,9 @@ package Helpers
 import scala.io.Source
 import Helpers.ComparableNode
 
+// This is a parser for the output of the graph
+// it used to deserialize the string representation of the node that the preprocessing script outputs
+// see tests
 object NodeDataParser {
 
   // A good use of ChatGPT
@@ -27,6 +30,10 @@ object NodeDataParser {
     }
   }
 
+  // more chatgpt for edge parsing
+  // fix a format
+  // let the ai pair programmer do the regex for you
+  // parse using brackets, number, commas and List identifier (the human should understand what the ai said and fix it)
   def parseEdgeData(input: String): ComparableEdge = {
     // Updated pattern to handle empty and non-empty lists
     val pattern = "\\((-?\\d+), (-?\\d+), (-?\\d+\\.\\d+), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\)\\)\\s*".r
@@ -48,7 +55,7 @@ object NodeDataParser {
   }
 
 
-  def parseList(listStr: String): List[Int] = {
+  private def parseList(listStr: String): List[Int] = {
     if (listStr.isEmpty || listStr == "List()") {
       List.empty
     } else {

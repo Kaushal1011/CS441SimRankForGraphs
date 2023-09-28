@@ -25,52 +25,61 @@ object ComputeSimRankJob {
   private val logger = CreateLogger(getClass)
 
   // Generated using chatgpt and good old fashioned experimenting to generate a custom type for str: sim for later use in the reducer
-  private class MyCustomWritable extends Writable {
-    // Define fields for your custom data
+  private class NodeSimWritable extends Writable {
+    // var can't be avoided since we are using a custom writable from hadoop api
     var similarity: Double = 0
     var nodestr: String = ""
 
 
-    // Implement the write method to serialize your data
+    // writer for writing to file
     override def write(out: DataOutput): Unit = {
       out.writeDouble(similarity)
       out.writeUTF(nodestr)
 
     }
 
-    // Implement the readFields method to deserialize your data
+    // reader when reading from file
     override def readFields(in: DataInput): Unit = {
       similarity = in.readDouble()
       nodestr = in.readUTF()
     }
 
-    override def toString(): String = {
+    override def toString: String = {
       nodestr + "=" + similarity
     }
   }
 
-  private class JaccardMapper extends Mapper[LongWritable, Text, Text, MyCustomWritable] {
+  // Mapper that finds similarity of original node(i) - perturbed node(j) for all i and j
+  // input file contains crossproduct of set of all nodes in the graph
+  private class JaccardMapper extends Mapper[LongWritable, Text, Text, NodeSimWritable] {
 
     private val logger = CreateLogger(classOf[JaccardMapper])
 
-    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, MyCustomWritable]#Context): Unit = {
-      val node1 = NodeDataParser.parseNodeData(value.toString.split("\\|")(0))
+    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, NodeSimWritable]#Context): Unit = {
+      // parse data using custom parser
+      val node1: ComparableNode = NodeDataParser.parseNodeData(value.toString.split("\\|")(0))
+      // parse data
       val node2 = NodeDataParser.parseNodeData(value.toString.split("\\|")(1))
 
 
-      // Calculate Jaccard similarity
+      // Calculate jaccard similarity of properties selected for comparison
       val similarity = node1.SimRankFromJaccardSimilarity(node2)
-      val customWritable = new MyCustomWritable()
+      val customWritable = new NodeSimWritable()
       customWritable.similarity = similarity
       customWritable.nodestr = node2.toString.trim
 
-      val reverseSimilarity = node2.SimRankFromJaccardSimilarity(node1)
-      val customWritable2 = new MyCustomWritable()
+      logger.debug("In Mapper:"+"Node1: " + node1.toString + " Node2: " + node2.toString + " Similarity: " + similarity)
+
+      // above was forward comparison i.e keys are nodes in graph 1 and values are nodes in graph 2
+      // below is reverse comparison i.e keys are nodes in graph 2 and values are nodes in graph 1
+
+      val reverseSimilarity: Double = node2.SimRankFromJaccardSimilarity(node1)
+      val customWritable2 = new NodeSimWritable()
 
       customWritable2.similarity = reverseSimilarity
       customWritable2.nodestr = node1.toString.trim
 
-      // compute similarity in forward direction
+      // compute similarity in forward direction and flag for later use in other jobs
       context.write(
         new Text(node1.toString.trim + "*" + "F"), customWritable)
 
@@ -83,21 +92,27 @@ object ComputeSimRankJob {
   }
 
 
-  private class JaccardReducer extends Reducer[Text, MyCustomWritable, Text, MyCustomWritable] {
+  // Cyclic Reducer such that it can act as a combiner and reducer
+  // Reducer finds the maximum in all the values for a given key
+  // Using this as reducer and combiner the pipeline can be seen as analogous to merge sort
+  private class JaccardReducer extends Reducer[Text, NodeSimWritable, Text, NodeSimWritable] {
 
     private val logger = CreateLogger(classOf[JaccardReducer])
 
-    override def reduce(key: Text, values: java.lang.Iterable[MyCustomWritable], context: Reducer[Text, MyCustomWritable, Text, MyCustomWritable]#Context): Unit = {
-//      val node1 = NodeDataParser.parseNodeData(key.toString)
-      val node2s = values.asScala.map(x => {
+    override def reduce(key: Text, values: java.lang.Iterable[NodeSimWritable], context: Reducer[Text, NodeSimWritable, Text, NodeSimWritable]#Context): Unit = {
+
+      // sort all values find value with highest similarity
+      val node2s: (ComparableNode, Double) = values.asScala.map(x => {
         val node2 = NodeDataParser.parseNodeData(x.nodestr)
         (node2, x.similarity)
       }).toList.sortBy(_._2).reverse.head
-      //      val sb = node2s._1.toString + "|" + node2s._2.toString
 
-      val customWritable = new MyCustomWritable()
+
+      val customWritable = new NodeSimWritable()
       customWritable.similarity = node2s._2
       customWritable.nodestr = node2s._1.toString.trim
+
+      logger.debug("In Reducer:"+"Node1: " + key.toString + " Node2: " + node2s._1.toString + " Similarity: " + node2s._2)
 
       context.write(key, customWritable)
     }
@@ -107,23 +122,29 @@ object ComputeSimRankJob {
     val conf = new Configuration()
     val job = Job.getInstance(conf, "ComputeSimRankJob")
 
+    if (args.length != 2) {
+      logger.error("Usage: ComputeSimRankJob <input path> <output path>")
+      System.exit(-1)
+    }
+
     logger.info("Starting ComputeSimRankJob for Nodes")
 
     job.setJarByClass(classOf[JaccardMapper])
 
-
+    // Set the Mapper, Combiner and Reducer classes
     job.setMapperClass(classOf[JaccardMapper])
+    // Throws key value pairs with similarity
     job.setCombinerClass(classOf[JaccardReducer])
+    // combines values from different mappers for keys sorts them, merging while sorting
     job.setReducerClass(classOf[JaccardReducer])
+    //  last sort mostly redundant but just in case, dont want cry hadoop tears
 
-    // Set the custom writable class as the output value class for the Mapper
-    job.setMapOutputValueClass(classOf[MyCustomWritable])
+    job.setMapOutputValueClass(classOf[NodeSimWritable])
     job.setMapOutputKeyClass(classOf[Text])
 
     job.setOutputKeyClass(classOf[Text])
     job.setOutputValueClass(classOf[Text])
 
-    //    job.setNumReduceTasks(8)
 
     // Set input and output paths
     FileInputFormat.addInputPath(job, new Path(args(0)))

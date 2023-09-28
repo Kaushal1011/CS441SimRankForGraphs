@@ -1,4 +1,4 @@
-package TLLabellerJobOldBiDirection
+package TLLabellerJob.TLLabellerJobOldBiDirection
 
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{Text, LongWritable}

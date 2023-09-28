@@ -12,6 +12,9 @@ import Utilz.CreateLogger
 
 import Helpers.{ComparableNode, NodeDataParser}
 
+// This is an old file that I was using to compute reverse cross jobs
+// I figured out a better way to do this and not need an extra job for it
+// but keeping this here for reference
 class crossMapperReverse extends Mapper[LongWritable, Text, Text, Text] {
 
   val logger = CreateLogger(classOf[crossMapperReverse])

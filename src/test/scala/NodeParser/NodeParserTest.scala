@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 import Helpers.NodeDataParser
 import Helpers.ComparableNode
 import scala.io.Source
-class NodeParsesTest extends AnyFlatSpec with Matchers {
+class NodeParserTest extends AnyFlatSpec with Matchers {
 
   given repeatable: Boolean= true
   behavior of "NodeParser for Nodes"

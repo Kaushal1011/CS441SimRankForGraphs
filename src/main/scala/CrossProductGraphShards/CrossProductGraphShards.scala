@@ -14,11 +14,14 @@ import Helpers.{ComparableNode, NodeDataParser}
 
 // Only a mapper job, out input file contains data in format
 // there are two group of nodes in original and perturbed graph
-// group of 5 % nodes from original graph (G1) \t group of 5 % nodes from perturbed graph (G1)
-// group of 5 % nodes from original graph (G1) \t group of 5 % nodes from perturbed graph (G2)
-// group of 5 % nodes from original graph (G2) \t group of 5 % nodes from perturbed graph (G1)
-// group of 5 % nodes from original graph (G2) \t group of 5 % nodes from perturbed graph (G2)
-
+// Shards for original graph (G1) \t Shards for perturbed graph (GG1)
+// Orignal has shard G1-20 and perturbed has shard GG1-20
+// input has
+// group of 5 % nodes from original graph (G1) \t group of 5 % nodes from perturbed graph (GG1)
+// group of 5 % nodes from original graph (G1) \t group of 5 % nodes from perturbed graph (GG2)
+// group of 5 % nodes from original graph (G2) \t group of 5 % nodes from perturbed graph (GG1)
+// group of 5 % nodes from original graph (G2) \t group of 5 % nodes from perturbed graph (GG2)
+// ....
 class crossMapper extends Mapper[LongWritable, Text, Text, Text] {
 
   val logger = CreateLogger(classOf[crossMapper])
@@ -33,7 +36,7 @@ class crossMapper extends Mapper[LongWritable, Text, Text, Text] {
     logger.info("Original Nodes: " + originalNodes.mkString(","))
     logger.info("Perturbed Nodes: " + perturbedNodes.mkString(","))
     logger.info("Crossproduct will be taken for these nodes, which are part of a 5% shard of original graph and perturbed graph")
-    // cross product of original and perturbed nodes
+    // cross product of original nodes from shard and perturbed nodes from shard
     originalNodes.foreach(originalNode => {
       perturbedNodes.foreach(perturbedNode => {
         context.write(new Text(originalNode), new Text(perturbedNode))
@@ -50,6 +53,8 @@ object CrossProductGraphShards {
     logger.info("CrossProductGraphShards Job Runner Initiated" )
 
     val conf = new Configuration()
+
+    // set seperator to | for easy splitting of data not tabs and spaces debate
     conf.set("mapreduce.output.textoutputformat.separator", "|")
 
     logger.debug("Seperator set to |")

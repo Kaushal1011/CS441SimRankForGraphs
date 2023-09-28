@@ -15,10 +15,14 @@ import org.slf4j.{Logger, LoggerFactory}
 import java.io.{DataInput, DataOutput}
 import scala.jdk.CollectionConverters.*
 
+// File is similar to ComputeSimRankJob, but it is used to calculate the similarity between edges
+// Always will be similar -> Could be merged into one file and handled by a parameter
+// For explanation and comments see ComputeSimRankJob
 object ComputeSimRankJobEdges {
 
+  //
   private val logger = CreateLogger(getClass)
-  class MyCustomWritable4Edges extends Writable {
+  private class EdgeSimWritable extends Writable {
     // Define fields for your custom data
     var similarity: Double = 0
     var edgestr: String = ""
@@ -37,28 +41,31 @@ object ComputeSimRankJobEdges {
       edgestr = in.readUTF()
     }
 
-    override def toString(): String = {
+    override def toString: String = {
       edgestr + "=" + similarity
     }
   }
 
-  private class JaccardMapper4Edge extends Mapper[LongWritable, Text, Text, MyCustomWritable4Edges] {
+  private class JaccardMapper4Edge extends Mapper[LongWritable, Text, Text, EdgeSimWritable] {
 
     private val logger = CreateLogger(classOf[JaccardMapper4Edge])
 
-    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, MyCustomWritable4Edges]#Context): Unit = {
-      val edge1 = NodeDataParser.parseEdgeData(value.toString.split("\\|")(0))
-      val edge2 = NodeDataParser.parseEdgeData(value.toString.split("\\|")(1))
+    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, EdgeSimWritable]#Context): Unit = {
+      // custom parsers (lets go chatgpt goes brr for regex)
+      val edge1: ComparableEdge = NodeDataParser.parseEdgeData(value.toString.split("\\|")(0))
+      val edge2: ComparableEdge = NodeDataParser.parseEdgeData(value.toString.split("\\|")(1))
 
 
       // Calculate Jaccard similarity
       val similarity = edge1.SimRankJaccardSimilarity(edge2)
-      val customWritable = new MyCustomWritable4Edges()
+      val customWritable = new EdgeSimWritable()
       customWritable.similarity = similarity
       customWritable.edgestr = edge2.toString.trim
 
+      logger.debug("In Mapper:"+"Edge1: " + edge1.toString + " Edge2: " + edge2.toString + " Similarity: " + similarity)
+
       val reverseSimilarity = edge2.SimRankJaccardSimilarity(edge1)
-      val customWritable2 = new MyCustomWritable4Edges()
+      val customWritable2 = new EdgeSimWritable()
 
       customWritable2.similarity = reverseSimilarity
       customWritable2.edgestr = edge1.toString.trim
@@ -72,20 +79,23 @@ object ComputeSimRankJobEdges {
     }
   }
 
-  private class JaccardReducer4Edge extends Reducer[Text, MyCustomWritable4Edges, Text, MyCustomWritable4Edges] {
+  private class JaccardReducer4Edge extends Reducer[Text, EdgeSimWritable, Text, EdgeSimWritable] {
 
     private val logger = CreateLogger(classOf[JaccardReducer4Edge])
 
-    override def reduce(key: Text, values: java.lang.Iterable[MyCustomWritable4Edges], context: Reducer[Text, MyCustomWritable4Edges, Text, MyCustomWritable4Edges]#Context): Unit = {
+    override def reduce(key: Text, values: java.lang.Iterable[EdgeSimWritable], context: Reducer[Text, EdgeSimWritable, Text, EdgeSimWritable]#Context): Unit = {
 
       val topEdge = values.asScala.map( x => {
         val edge2 = NodeDataParser.parseEdgeData(x.edgestr)
         (edge2, x.similarity)
       }).toList.sortBy(_._2).reverse.head
 
-      val customWritable = new MyCustomWritable4Edges()
+      val customWritable = new EdgeSimWritable()
       customWritable.similarity = topEdge._2
       customWritable.edgestr = topEdge._1.toString.trim
+
+      logger.debug("In Reducer:"+"Edge1: " + key.toString + " Edge2: " + topEdge._1.toString + " Similarity: " + topEdge._2)
+
 
       context.write(key,customWritable)
 
@@ -96,24 +106,28 @@ object ComputeSimRankJobEdges {
 
     logger.info("Starting ComputeSimRankJobEdges")
 
+    if (args.length != 2) {
+      logger.error("Usage: ComputeSimRankJobEdges <input path> <output path>")
+      System.exit(-1)
+    }
+
     val conf = new Configuration()
     val job = Job.getInstance(conf, "ComputeSimRankJob")
 
     job.setJarByClass(classOf[JaccardMapper4Edge])
 
-
+    // merging sort pattern
     job.setMapperClass(classOf[JaccardMapper4Edge])
     job.setCombinerClass(classOf[JaccardReducer4Edge])
     job.setReducerClass(classOf[JaccardReducer4Edge])
 
-    // Set the custom writable class as the output value class for the Mapper
-    job.setMapOutputValueClass(classOf[MyCustomWritable4Edges])
+
+    job.setMapOutputValueClass(classOf[EdgeSimWritable])
     job.setMapOutputKeyClass(classOf[Text])
 
     job.setOutputKeyClass(classOf[Text])
     job.setOutputValueClass(classOf[Text])
 
-    //    job.setNumReduceTasks(8)
 
     // Set input and output paths
     FileInputFormat.addInputPath(job, new Path(args(0)))

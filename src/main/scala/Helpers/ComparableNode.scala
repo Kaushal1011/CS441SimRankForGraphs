@@ -1,25 +1,34 @@
 package Helpers
 
+// see tests on how to use and examples of running
 class ComparableNode (val id:Int, val incoming_nodes_len: Int, val outgoing_node_len: Int, val children_props_hash:List[Int], val properties:List[Int], val graphType:String = "original"){
 
   def SimRankFromJaccardSimilarity(other: ComparableNode): Double = {
+
+    // similarity of children properties
     val intersectionChildProp = children_props_hash.intersect(other.children_props_hash)
-    val addedChildProp = children_props_hash.concat(other.children_props_hash)
-    // from union remove intersection
-    val unionChildProp = addedChildProp.diff(intersectionChildProp)
+    val unionChildProp = children_props_hash.concat(other.children_props_hash).distinct
 
-    val jaccardSimilarityChildProp = if (children_props_hash.size.toDouble == 0.0 || other.children_props_hash.size.toDouble==0.0) 0.0 else intersectionChildProp.size.toDouble / unionChildProp.size.toDouble
-
-
+    // similarity of properties
     val intersectionProps = properties.intersect(other.properties)
-    val addedProps = properties.concat(other.properties)
-    // from union remove intersection
-    val unionProps = addedProps.diff(intersectionProps)
+    val unionProps = properties.concat(other.properties).distinct
 
-    val jaccardSimilarityProps = if (properties.size.toDouble == 0.0 || other.properties.size.toDouble==0.0 ) 0.0 else intersectionProps.size.toDouble / unionProps.size.toDouble
+    // Jaccard similarity for child properties
+    val jaccardSimilarityChildProp =
+      if (unionChildProp.isEmpty) 0.0
+      else intersectionChildProp.size.toDouble / unionChildProp.size.toDouble
 
+    // Jaccard similarity for properties
+    val jaccardSimilarityProps =
+      if (unionProps.isEmpty) 0.0
+      else intersectionProps.size.toDouble / unionProps.size.toDouble
 
-    val simScore = jaccardSimilarityProps
+    // denominator logic: Number of non-zero unions
+    val denominator: Int = Seq(unionChildProp.size, unionProps.size).count(_ > 0)
+
+    val simScore =
+      if (denominator == 0) 0.0
+      else (jaccardSimilarityChildProp + jaccardSimilarityProps) / denominator
 
     simScore
   }

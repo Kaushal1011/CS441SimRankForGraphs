@@ -36,7 +36,7 @@ object NodeDataParser {
   // parse using brackets, number, commas and List identifier (the human should understand what the ai said and fix it)
   def parseEdgeData(input: String): ComparableEdge = {
     // Updated pattern to handle empty and non-empty lists
-    val pattern = "\\((-?\\d+), (-?\\d+), (-?\\d+\\.\\d+), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\)\\)\\s*".r
+    val pattern = "\\((-?\\d+), (-?\\d+), (-?\\d+(?:\\.\\d+)?(?:[Ee][-+]?\\d+)?), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\), List\\(([^)]*)\\)\\)\\s*".r
 
     input match {
       case pattern(srcId, dstId, cost, propssrc, propsdst, childrenhashsrc, childrenhashdst) =>
@@ -50,7 +50,7 @@ object NodeDataParser {
 
         new ComparableEdge(srcIdInt, dstIdInt, costDouble, propssrcList, propsdstList, childrenhashsrcList, childrenhashdstList)
       case _ =>
-        throw new IllegalArgumentException("Invalid input format")
+        throw new IllegalArgumentException("Invalid input format > Supplied Input:  " + input)
     }
   }
 

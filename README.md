@@ -39,6 +39,8 @@ The program works in 5 phases as follows:
 
 Clone the repo and run the following commands in the root directory of the project. Recursively clone the submodule as well.
 
+*Make sure you have hadoop installed and configured on your machine. Install Directions for [Windows](https://gist.github.com/vorpal56/5e2b67b6be3a827b85ac82a63a5b3b2e)*
+
 ```bash
 git submodule update --init --recursive
 ```

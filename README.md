@@ -1,14 +1,27 @@
 ---
-author: kaushal1011
-date: 2023-09-23
+author: Kaushal Patil <kaushal1011>
+date: 2023-09-29
 ---
 # [Kaushal Patil](@kaushal1011):  CS441 SimRankForGraphs Map Reduce
 
 ## Description
 
+
 This is the implementation of an algorithm that finds traceability links in two graphs such that the other graph is a perturbed version of the original graph.
 More context can be found in the [homeowork description](https://github.com/0x1DOCD00D/CS441_Fall2023/blob/main/Homework1.md). For graph generation, we use 
-[NetGameSim](https://github.com/0x1DOCD00D/NetGameSim) by [Dr Mark Grechanik](@0x1DOCD00D). The algorithm is implemented in scala, it uses a preprocessing step and then 4-5 map reduce jobs to find the traceability links and output the required stats as mentioned in the homework description. The program works in 5 phases as follows:
+[NetGameSim](https://github.com/0x1DOCD00D/NetGameSim) by [Dr Mark Grechanik](@0x1DOCD00D). The algorithm is implemented in scala, it uses a preprocessing step and then 4-5 map reduce jobs to find the traceability links and output the required stats as mentioned in the homework description. 
+
+### Preprocessing
+
+![Preprocessing](./assets/PreprocDoc.png)
+
+### Map Reduce Jobs
+
+![MapReduce](./assets/MRDoc.png)
+
+## Algorithm
+
+The program works in 5 phases as follows:
 
 - Phase 1: Preprocessing(String encoding nodes and edges to a comparableNode/Edge format), Sharding and Cross Product of Shards to prepare the input for the next phase. 
   - Run: netgamesim to generate graph, preprocessor (check git submodule, instruction to run given below) to generate shard files for both nodes and edges.
@@ -20,14 +33,7 @@ More context can be found in the [homeowork description](https://github.com/0x1D
   - Run: TLLabellerJob Mapper for nodes and edges
 - Phase 5: This phase deals with computing the required metrics such as ATL,CTL,WTL,DTL,GTL,BTL,RTL,ACC,VPR,BTRL. (as described in the homework description)
   - Run: TLLabellerJob reducer for nodes and edges, SumJobForStatsBiCombine, StatCompute 
-  
-### Preprocessing
 
-![Preprocessing](./assets/PreprocDoc.png)
-
-### Map Reduce Jobs
-
-![MapReduce](./assets/MRDoc.png)
 
 ## How to run
 

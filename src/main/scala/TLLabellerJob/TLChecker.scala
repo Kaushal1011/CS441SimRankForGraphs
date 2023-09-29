@@ -23,6 +23,10 @@ import Utilz.*
 // used lazy loader to load ngs yaml only once
 // uses setup step to get truth yaml
 // had to use one var here :(
+
+/**
+ * This is the reducer that finds CTL, DTL, WTL, ATL values for each type of processing
+ */
 private class TLChecker extends Reducer[Text, Text, Text, IntWritable] {
 
   private val logger: Logger = Utilz.CreateLogger(classOf[TLChecker])
@@ -58,6 +62,13 @@ private class TLChecker extends Reducer[Text, Text, Text, IntWritable] {
   // a correct tl (node or edge) is one that doesnt exist in any of the added, modified and removed sets
   // matched truth values  = Full truth - (added + modified + removed) or (elements not in the union of added, modified and removed sets)
   // The computation uses the above logic to find CTL, DTL, WTL, ATL values
+
+  /**
+   * This is the reducer that finds CTL, DTL, WTL, ATL values for each type of processing
+   * @param key key
+   * @param values values
+   * @param context context
+   */
   override def reduce(key: Text, values: java.lang.Iterable[Text], context: Reducer[Text, Text, Text, IntWritable]#Context): Unit = {
 
     val parsedData = parsedDataLazy.value

@@ -27,6 +27,13 @@ class crossMapper extends Mapper[LongWritable, Text, Text, Text] {
   val logger = CreateLogger(classOf[crossMapper])
 
   logger.info("CrossProductGraphShards Mapper Started")
+
+  /**
+   * Mapper function for CrossProductGraphShards
+   * @param key - line number
+   * @param value - line from input file
+   * @param context - context object
+   */
   override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, Text]#Context): Unit = {
 
     val line = value.toString
@@ -48,6 +55,11 @@ class crossMapper extends Mapper[LongWritable, Text, Text, Text] {
 object CrossProductGraphShards {
 
   val logger = CreateLogger(getClass)
+
+  /**
+   * Main function for CrossProductGraphShards
+   * @param args - input and output paths
+   */
   def main(args: Array[String]): Unit = {
 
     logger.info("CrossProductGraphShards Job Runner Initiated" )

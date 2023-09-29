@@ -2,8 +2,24 @@ package Helpers
 
 // see tests for examples of how to use this class
 // and how it works
+
+/**
+ * This class is used to compare edges in the graph
+ * @param srcId source node id
+ * @param dstId destination node id
+ * @param weight weight of the edge
+ * @param propertiesSrc properties of the source node
+ * @param propertiesDst properties of the destination node
+ * @param children_prop_hash_source children properties of the source node
+ * @param children_prop_hash_destination children properties of the destination node
+ */
 class ComparableEdge (val srcId: Int, val dstId: Int, val weight: Double, val propertiesSrc: List[Int], val propertiesDst: List[Int], val children_prop_hash_source: List[Int], val children_prop_hash_destination: List[Int])  {
 
+  /**
+   * This function is used to compare two edges based on their properties
+   * @param other the other edge to compare to
+   * @return
+   */
   def SimRankJaccardSimilarity(other: ComparableEdge): Double = {
     val intersectionSrcProp = this.propertiesSrc.intersect(other.propertiesSrc).size
     val unionSrcProp = this.propertiesSrc.concat(other.propertiesSrc).distinct.size
@@ -75,6 +91,10 @@ class ComparableEdge (val srcId: Int, val dstId: Int, val weight: Double, val pr
     children_prop_hash_destination
   }
 
+  /**
+   * function that string encodes the ComparableEdge
+   * @return string encoding of the ComparableEdge
+   */
   override def toString: String = {
     s"($srcId, $dstId, $weight, $propertiesSrc, $propertiesDst, $children_prop_hash_source, $children_prop_hash_destination)"
   }

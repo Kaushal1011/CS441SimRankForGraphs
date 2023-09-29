@@ -18,13 +18,19 @@ import Utilz.*
 object StatCompute {
 
 
-
   // Define the case class to hold metrics values
   private case class Metrics(ATL: Double = 0.0, RTL: Double = 0.0, WTL: Double = 0.0, GTL: Double = 0.0, BTL: Double = 0.0)
 
   // Identity mapper that just passes the data through
   private class IdentityMapper extends Mapper[Object, Text, Text, Text] {
     private val logger = Utilz.CreateLogger(classOf[IdentityMapper])
+
+    /**
+     * Map function that just passes the data through
+     * @param key ignored
+     * @param value the line of data
+     * @param context the context to write to
+     */
     override def map(key: Object, value: Text, context: Mapper[Object, Text, Text, Text]#Context): Unit = {
       logger.debug(s"Mapper: $value")
       context.write(new Text("metrics"), value)
@@ -35,6 +41,13 @@ object StatCompute {
   private class MetricsReducer extends Reducer[Text, Text, Text, DoubleWritable] {
 
     private val logger = Utilz.CreateLogger(classOf[MetricsReducer])
+
+    /**
+     * Reduce function that uses a case class to hold the metrics values
+     * @param key ignored
+     * @param values the values to reduce
+     * @param context the context to write to
+     */
     override def reduce(key: Text, values: java.lang.Iterable[Text], context: Reducer[Text, Text, Text, DoubleWritable]#Context): Unit = {
 
       logger.debug(s"Reducer: $key, $values")

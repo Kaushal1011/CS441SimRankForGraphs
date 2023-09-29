@@ -23,6 +23,10 @@ import Utilz.*
 // reducer outputs CTL, DTL, WTL, ATL values for each type of processing
 object TLLabellerJob {
 
+  /**
+   * Mapper class for the TLLabellerJob
+   * @param args - args <input> <output> <yamlPath> <node|edge>
+   */
   def main(args: Array[String]): Unit = {
     if (args.length != 4) {
       println("Usage: Labbeler Mapper Job <input> <output> <yamlPath> <node|edge>")

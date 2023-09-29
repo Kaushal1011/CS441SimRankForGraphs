@@ -21,6 +21,12 @@ private class TLLabeller extends Mapper[LongWritable, Text, Text, Text] {
 
   private val logger: Logger = Utilz.CreateLogger(classOf[TLLabeller])
 
+  /**
+   * Mapper for TLLabeller
+   * @param key - key
+   * @param value - value
+   * @param context - context
+   */
   override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, Text]#Context): Unit = {
 
     logger.info("TLLabeller Mapper")

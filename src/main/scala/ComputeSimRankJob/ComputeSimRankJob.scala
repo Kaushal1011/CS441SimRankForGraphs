@@ -19,12 +19,23 @@ import java.io.DataOutput
 import org.apache.hadoop.io.Writable
 
 
-
+/**
+ * This job computes the similarity between all nodes in the graph
+ * It uses the Jaccard Similarity metric to compute similarity
+ * It uses a custom writable to store the similarity and the node string
+ * It uses a cyclic reducer to act as a combiner and reducer
+ * It uses a custom parser to parse the node data
+ * It uses a custom comparable node to compare nodes
+ */
 object ComputeSimRankJob {
 
   private val logger = CreateLogger(getClass)
 
   // Generated using chatgpt and good old fashioned experimenting to generate a custom type for str: sim for later use in the reducer
+
+  /**
+   * Custom Writable to store similarity and node string
+   * */
   private class NodeSimWritable extends Writable {
     // var can't be avoided since we are using a custom writable from hadoop api
     var similarity: Double = 0
@@ -32,6 +43,11 @@ object ComputeSimRankJob {
 
 
     // writer for writing to file
+
+    /**
+     * Write to file
+     * @param out DataOutput
+     */
     override def write(out: DataOutput): Unit = {
       out.writeDouble(similarity)
       out.writeUTF(nodestr)
@@ -51,10 +67,21 @@ object ComputeSimRankJob {
 
   // Mapper that finds similarity of original node(i) - perturbed node(j) for all i and j
   // input file contains crossproduct of set of all nodes in the graph
+
+  /**
+   * Mapper that finds similarity of original node(i) - perturbed node(j) for all i and j
+   * input file contains crossproduct of set of all nodes in the graph
+   */
   private class JaccardMapper extends Mapper[LongWritable, Text, Text, NodeSimWritable] {
 
     private val logger = CreateLogger(classOf[JaccardMapper])
 
+    /**
+     * Map function that finds similarity of original node(i) - perturbed node(j) for all i and j
+     * @param key LongWritable
+     * @param value Text
+     * @param context Mapper[LongWritable, Text, Text, NodeSimWritable]#Context
+     */
     override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, NodeSimWritable]#Context): Unit = {
       // parse data using custom parser
       val node1: ComparableNode = NodeDataParser.parseNodeData(value.toString.split("\\|")(0))
@@ -99,6 +126,12 @@ object ComputeSimRankJob {
 
     private val logger = CreateLogger(classOf[JaccardReducer])
 
+    /**
+     * Reduce function that finds the maximum in all the values for a given key
+     * @param key
+     * @param values
+     * @param context
+     */
     override def reduce(key: Text, values: java.lang.Iterable[NodeSimWritable], context: Reducer[Text, NodeSimWritable, Text, NodeSimWritable]#Context): Unit = {
 
       // sort all values find value with highest similarity
@@ -118,6 +151,10 @@ object ComputeSimRankJob {
     }
   }
 
+  /**
+   * Main function
+   * @param args Array[String]
+   */
   def main(args: Array[String]): Unit = {
     val conf = new Configuration()
     val job = Job.getInstance(conf, "ComputeSimRankJob")

@@ -15,6 +15,12 @@ object SumJobForStats {
   // Mapper class
   private class TLMapper extends Mapper[Object, Text, Text, IntWritable] {
 
+    /**
+     * Map function to find GTL, BTL, RTL
+     * @param key ignored
+     * @param value input line
+     * @param context output context
+     */
     override def map(key: Object, value: Text, context: Mapper[Object, Text, Text, IntWritable]#Context): Unit = {
       val splits = value.toString.split("\t")
       val tlType = splits(0)
@@ -38,13 +44,23 @@ object SumJobForStats {
   // Similar to the word count example
   // used as combiner and reducer to reduce the number of records sent to reducer
   // merge sum pattern
-  class TLReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
+
+  /**
+   * Reducer class to sum up the counts for each key
+   * Similar to the word count example
+   * used as combiner and reducer to reduce the number of records sent to reducer
+   */
+  private class TLReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
     override def reduce(key: Text, values: java.lang.Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
       val sum = values.asScala.foldLeft(0)(_ + _.get())
       context.write(key, new IntWritable(sum))
     }
   }
 
+  /**
+   * Main function
+   * @param args input and output paths
+   */
   def main(args: Array[String]): Unit = {
 
     val logger = Utilz.CreateLogger(getClass)

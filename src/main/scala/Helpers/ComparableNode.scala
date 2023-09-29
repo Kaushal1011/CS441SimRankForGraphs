@@ -1,8 +1,23 @@
 package Helpers
 
 // see tests on how to use and examples of running
+
+/**
+ * This class is used to compare nodes in the graph
+ * @param id - id of the node
+ * @param incoming_nodes_len - number of incoming nodes
+ * @param outgoing_node_len - number of outgoing nodes
+ * @param children_props_hash - hash of children properties
+ * @param properties - properties of the node
+ * @param graphType - type of the graph (original or reversed)
+ */
 class ComparableNode (val id:Int, val incoming_nodes_len: Int, val outgoing_node_len: Int, val children_props_hash:List[Int], val properties:List[Int], val graphType:String = "original"){
 
+  /**
+   * This function is used to calculate the similarity between two nodes
+   * @param other - the other node to compare with
+   * @return
+   */
   def SimRankFromJaccardSimilarity(other: ComparableNode): Double = {
 
     // similarity of children properties
@@ -41,5 +56,9 @@ class ComparableNode (val id:Int, val incoming_nodes_len: Int, val outgoing_node
   def get_children_props_hash():List[Int] = children_props_hash
   def get_properties():List[Int] = properties
 
+  /**
+   * This function string encodes the node
+   * @return - string encoding of the node
+   */
   override def toString: String = s"($id, $incoming_nodes_len, $outgoing_node_len, $children_props_hash, $properties)"
 }

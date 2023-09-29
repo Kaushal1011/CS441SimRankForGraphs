@@ -3,7 +3,6 @@ package TLLabellerJob
 
 import java.net.URI
 import java.io.FileInputStream
-import TLLabellerJobOldBiDirection.TLLabellerCombinedReducer
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, MultipleInputs}

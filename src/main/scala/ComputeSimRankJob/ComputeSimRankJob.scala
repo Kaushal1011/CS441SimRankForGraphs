@@ -37,6 +37,8 @@ object ComputeSimRankJob {
    * Custom Writable to store similarity and node string
    * */
   private class NodeSimWritable extends Writable {
+    // add vals to bracket in constructor ?
+
     // var can't be avoided since we are using a custom writable from hadoop api
     var similarity: Double = 0
     var nodestr: String = ""

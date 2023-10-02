@@ -18,7 +18,7 @@ import Helpers.NGSYamlParser.ParsedData
 import Utilz.*
 
 // new to scala
-// more chatgpt magic to avoid vars, learnt how to do it for the next homework :)
+// did some chatgpting to load file from cache but turned out unexplainable
 // used lazy loader to load ngs yaml only once
 // uses setup step to get truth yaml
 // had to use one var here :(

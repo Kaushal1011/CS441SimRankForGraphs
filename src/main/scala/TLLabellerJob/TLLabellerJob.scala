@@ -27,6 +27,9 @@ object TLLabellerJob {
    * @param args - args <input> <output> <yamlPath> <node|edge>
    */
   def main(args: Array[String]): Unit = {
+
+    val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
     if (args.length != 4) {
       println("Usage: Labbeler Mapper Job <input> <output> <yamlPath> <node|edge>")
       System.exit(1)
@@ -97,10 +100,45 @@ object TLLabellerJob {
     FileOutputFormat.setOutputPath(job, outputPath)
 
     if (job.waitForCompletion(true)) {
+      logger.info("Job 1 completed successfully")
+    } else {
+      System.exit(1)
+    }
+
+    // run mapper only job to get intermediate output
+
+    val job2 = Job.getInstance(conf, "only Mapper Job to produce labels files for inspection")
+    job2.addCacheFile(new URI(yamlPath))
+
+    job2.setJarByClass(classOf[TLLabeller])
+
+    // set the combiner mapper class
+    // Set the custom writable class as the output value class for the Mapper
+    job2.setMapOutputValueClass(classOf[Text])
+    job2.setMapOutputKeyClass(classOf[Text])
+
+    job2.setOutputKeyClass(classOf[Text])
+    job2.setOutputValueClass(classOf[Text])
+
+    // Output key and value classes
+    job2.setOutputKeyClass(classOf[Text])
+    job2.setOutputValueClass(classOf[IntWritable])
+
+    // Input format for the only mapper
+    MultipleInputs.addInputPath(job2, inputPath1, classOf[TextInputFormat], classOf[TLLabeller])
+
+    val outputPath2 = new Path(args(1) + "_labels")
+
+    FileOutputFormat.setOutputPath(job2, outputPath2 )
+
+    if (job2.waitForCompletion(true)) {
       System.exit(0)
     } else {
       System.exit(1)
     }
+
+
+
   }
 
 }

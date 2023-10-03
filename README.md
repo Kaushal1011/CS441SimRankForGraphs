@@ -4,6 +4,16 @@ date: 2023-09-29
 ---
 # [Kaushal Patil](@kaushal1011):  CS441 SimRankForGraphs Map Reduce
 
+## File wise documentation
+
+- [CrossProductGraphShards](./docs/CrossProductGraphShards.md)
+- [ComputeSimRankJob](./docs/ComputeSimRankJob.md)
+- [StatCompute](./docs/StatCompute.md)
+- [TLLabellerJob](./docs/TLLabellerJob.md)
+- [SumJobForStats](./docs/SumJobForStats.md)
+- [StatCompute](./docs/StatCompute.md)
+- [Helpers](./docs/Helpers.md)
+
 ## Description
 
 
@@ -51,7 +61,7 @@ git submodule update --init --recursive
 - run `cd preprocessor`
 - run `sbt clean compile assembly` in the preprocessor directory
 - copy the files generated from netgamesim to the preprocessor directory
-- run `java -jar target/scala-3.2.2/PreprocessorForNGSSimRank-assembly-0.1.0-SNAPSHOT.jar <path to orignal graph ngs> <path to perturbed graph ngs> <path to output directory> <yaml file> <output shard file name>`
+- run `java -jar target/scala-3.2.2/PreprocessorForNGSSimRank-assembly-0.1.0-SNAPSHOT.jar <path to orignal graph ngs> <path to perturbed graph ngs> <path to output directory> <output shard file name> <yaml file>`
 - upload the output nodeSharded file, edgeSharded file and the yaml file to HDFS.
 
 ### Map Reduce Jobs
@@ -78,7 +88,7 @@ git submodule update --init --recursive
 
 - run (if computing only for nodes of edges) `hadoop jar target/scala-3.2.2/CS441SimRankForGraphs-assembly-0.1.0-SNAPSHOT.jar SumJobForStats.SumJobForStats <input node/edge labels> <output>`
   - The last argument determines whether the job is for nodes or edges
-- run (if computing for both nodes and edges) `hadoop jar target/scala-3.2.2/CS441SimRankForGraphs-assembly-0.1.0-SNAPSHOT.jar SumJobForStatsBiCombine.SumJobForStatsBiCombine <input node labels> <input edge labels> <output>`
+- run (if computing for both nodes and edges) `hadoop jar target/scala-3.2.2/CS441SimRankForGraphs-assembly-0.1.0-SNAPSHOT.jar SumJobForStats.SumJobForStatsCombineJob <input node labels> <input edge labels> <output>`
 
 ### Stat Compute
 

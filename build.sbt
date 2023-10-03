@@ -29,6 +29,8 @@ lazy val commonDependencies = Seq(
   "org.apache.hadoop" % "hadoop-client" % hadoopVersion,
   "org.scalactic" %% "scalactic" % scalacticVersion,
   "org.yaml" % "snakeyaml" % snakeyamlVersion,
+  "software.amazon.awssdk" % "s3" % "2.19.31",
+  "software.amazon.awssdk" % "netty-nio-client" % "2.19.31"
 
 )
 

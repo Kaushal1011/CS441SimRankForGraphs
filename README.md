@@ -135,3 +135,10 @@ BLTR	0.061946902654867256
 VPR	0.9203539823008849
 ```
 
+## Algorithm Benchmarking
+
+The algorithm metrics were analyzed for different perturbation contants and graph size set to 300 nodes. Here are the results:
+
+![Accuracy](./assets/AccuracyvsPerturbationConstant.png)
+![BTLR](./assets/BTLRvsPerturbationConstant.png)
+![VPR](./assets/VPRvsPerturbationConstant.png)

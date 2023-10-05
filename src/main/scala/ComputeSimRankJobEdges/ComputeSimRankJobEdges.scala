@@ -23,7 +23,12 @@ object ComputeSimRankJobEdges {
   //
   private val logger = CreateLogger(getClass)
   private class EdgeSimWritable extends Writable {
-    // Define fields for your custom data
+    // add vals to bracket in constructor ?
+
+    // var can't be avoided since we are using a custom writable from hadoop api
+    // Better explaination: var cannot be avoided because method
+    // readFields() is called by hadoop api and it needs to set the values of the variables
+    // readFields() is being used by the reducer to read the values from the file that gets written by the mapper
     var similarity: Double = 0
     var edgestr: String = ""
 

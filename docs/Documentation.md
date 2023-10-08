@@ -52,7 +52,7 @@ The mappers and reducers are as follows:
 
 - [TLLabellerMapper](./TLLabellerJob.md): This mapper deals with node labelling. We label each node from graph 1 as either matched, modified, or removed based on similarity score. We label each node from graph 2 as removed if their max sim score is below a threshold. The output of this mapper is a file where each line is a node from graph 1 or graph 2 and its label. In this scenario, the matched nodes are the traceability links which are matched and the removed, added and modified nodes the traceability links which are discarded. The output of this job is a key matched/added/removed/modified, node information. A matched node is something which this algorithm says is a tracebility link. A node added,removed,modified is something which this algorithm says is not a traceability link.
 
-- [TLLabellerReducer][./TLLabellerJob.md]: In this reducer, we read the golden truth yaml given to us by netgame sim and find out which matched nodes are actual tracebility links, which matched nodes are tracebility links that should have been discarded, which tracebility links that should have been discarded are actual tracebility links and which tracebility links that should be discarded were actually discarded. This done assuming the following logic:
+- [TLLabellerReducer](./TLLabellerJob.md): In this reducer, we read the golden truth yaml given to us by netgame sim and find out which matched nodes are actual tracebility links, which matched nodes are tracebility links that should have been discarded, which tracebility links that should have been discarded are actual tracebility links and which tracebility links that should be discarded were actually discarded. This done assuming the following logic:
   - If a node is added, modified or removed in the yaml its a tracebilility link that should be discarded.
   - If a node exists in the yaml, its a tracebility link that should be matched.
 
@@ -60,11 +60,11 @@ The mappers and reducers are as follows:
 
 - [SumJobForStatsCombine/SumJobForStatsBiCombine Mapper](./SumJobForStats.md): Its essentially a modified version of an identity mapper that, aggregates to count GTL, BTL and RTL. This is done by writing to context a GTL key anytim a DTL or ATL is encountered, a BTL key anytime a WTL or CTL is encountered and a RTL key always. The output of this mapper is a key GTL/BTL/RTL/CTL/WTL/ATL/DTL and the count (an integer).
 
-- [SumJobForStatsCombine Reducer][./SumJobForStats.md]: This reducer finds the sum of values for all the keys. The output of this reducer is a key GTL/BTL/RTL/CTL/WTL/ATL/DTL and the sum of the values for that key. These are the counts of different metrics as described in the homework.
+- [SumJobForStatsCombine Reducer](./SumJobForStats.md): This reducer finds the sum of values for all the keys. The output of this reducer is a key GTL/BTL/RTL/CTL/WTL/ATL/DTL and the sum of the values for that key. These are the counts of different metrics as described in the homework.
 
-- [StatCompute Mapper][./StatCompute.md]: Is an Identity Mapper, writes a key "Metric" with the value as "CTL:(its Count)".
+- [StatCompute Mapper](./StatCompute.md): Is an Identity Mapper, writes a key "Metric" with the value as "CTL:(its Count)".
 
-- [StatCompute Reducer][./StatCompute.md]: The reducer extracts all tracebility links metrics from the value array received by the only key Metric and computes the accuracy, BLTR and VPR metrics. The output of this reducer is a key "Accuracy" with the value as the accuracy, a key "BLTR" with the value as the BLTR and a key "VPR" with the value as the VPR. These are the metrics as described in the homework.
+- [StatCompute Reducer](./StatCompute.md): The reducer extracts all tracebility links metrics from the value array received by the only key Metric and computes the accuracy, BLTR and VPR metrics. The output of this reducer is a key "Accuracy" with the value as the accuracy, a key "BLTR" with the value as the BLTR and a key "VPR" with the value as the VPR. These are the metrics as described in the homework.
 
 ## Insight 
 

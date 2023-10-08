@@ -4,6 +4,9 @@ date: 2023-09-29
 ---
 # [Kaushal Patil](@kaushal1011):  CS441 SimRankForGraphs Map Reduce
 
+## [Video Demonstration for AWS EMR Deployment](https://youtu.be/jWgNTsbx1Gk)
+
+The above video contains information of how these jobs were deployed to AWS and what the results were!
 
 ## [Documentation](./docs/Documentation.md)
 

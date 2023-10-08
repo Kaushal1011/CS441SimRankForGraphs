@@ -2,21 +2,21 @@
 `TLLabellerJob`
 
 ## Purpose
-This object is used to label nodes and edges in a graph as added, removed, modified, or matched based on threshold values loaded from a configuration file. It uses a mapper to read the input graph data and a reducer to output the counts of different types of temporal links (TLs).
+This object is used to label nodes and edges in a graph as added, removed, modified, or matched based on threshold values loaded from a configuration file. It uses a mapper to read the input graph data and a reducer to output the counts of different types of tracebility link metrics (TLs).
 
 ## Classes
 - `TLLabeller`: A mapper that reads the input graph data and labels nodes and edges as added, removed, modified, or matched based on threshold values loaded from a configuration file.
-- `TLChecker`: A reducer that outputs the counts of different types of temporal links (TLs).
+- `TLChecker`: A reducer that outputs the counts of different types of tracebility link metrics (TLs).
 
 ## Functions
 - `main(args: Array[String]): Unit`: The main function that sets up the job and runs it.
 
 ## How it Works
-The `TLLabellerJob` object sets up a Hadoop job to label nodes and edges in a graph as added, removed, modified, or matched based on threshold values loaded from a configuration file. It uses a mapper to read the input graph data and a reducer to output the counts of different types of temporal links (TLs).
+The `TLLabellerJob` object sets up a Hadoop job to label nodes and edges in a graph as added, removed, modified, or matched based on threshold values loaded from a configuration file. It uses a mapper to read the input graph data and a reducer to output the counts of different types of tracebility link metrics (TLs).
 
 The `TLLabeller` mapper reads the input graph data and labels nodes and edges as added, removed, modified, or matched based on threshold values loaded from a configuration file. It outputs the node or edge ID and the label as a key-value pair.
 
-The `TLChecker` reducer outputs the counts of different types of temporal links (TLs). It receives the node or edge ID and a list of labels as input. It computes the counts of CTL, DTL, WTL, and ATL based on the labels and outputs the counts as a key-value pair.
+The `TLChecker` reducer outputs the counts of different types of tracebility link metrics (TLs). It receives the node or edge ID and a list of labels as input. It computes the counts of CTL, DTL, WTL, and ATL based on the labels and outputs the counts as a key-value pair.
 
 ## Class Name
 `TLLabeller`

@@ -4,15 +4,10 @@ date: 2023-09-29
 ---
 # [Kaushal Patil](@kaushal1011):  CS441 SimRankForGraphs Map Reduce
 
-## File wise documentation
 
-- [CrossProductGraphShards](./docs/CrossProductGraphShards.md)
-- [ComputeSimRankJob](./docs/ComputeSimRankJob.md)
-- [StatCompute](./docs/StatCompute.md)
-- [TLLabellerJob](./docs/TLLabellerJob.md)
-- [SumJobForStats](./docs/SumJobForStats.md)
-- [StatCompute](./docs/StatCompute.md)
-- [Helpers](./docs/Helpers.md)
+## [Documentation](./docs/Documentation.md)
+
+The markdown file linked above contains the most essential information about the project. It contains the usage, details, explainations and information about the project. The rest of the readme contains the information about running the project, general information and other details.
 
 ## Description
 

@@ -68,7 +68,9 @@ The mappers and reducers are as follows:
 
 ## Insight 
 
-- The reading of Yaml File by adding it to hadoop context required one var for storing the context information. The class only receives the context during the setup phase and not while it is initialised so a val couldnt have been used. Using this var is neccessary because it makes it possible for the reducer to load the yaml file only once in the setup and not for every reduce function call. A different choice could have led to a different result. 
+- The reading of Yaml File by adding it to hadoop context required one var for storing the context information. The class only receives the context during the setup phase and not while it is initialised so a val couldnt have been used. Using this var is neccessary because it makes it possible for the reducer to load the yaml file only once in the setup and not for every reduce function call. A different choice could have led to a different result.
+
+- The CustomWritable which extends hadoops writable interface required 2 vars for storing node string and similarity score. This interface has a read method which is supposed to read into the variables and requires mutable variables. I did consider the possibility of using immutable variables here but the framework didnt allow me to do so / I couldn't figure out a way to avoid the use of mutable variables for creating the CustomWritable. I did consider the possibility to not use the read method / not write it at all however its a method which is used by my reducer and it uses the read method hence it was required.
 
 - The NGS Yaml parser has two options for loading the file one from a normal file system and the other over an http get call, this was done because the job had to access the file from an s3 bucket when it was deployed on aws emr. For the scope of this project a simple bucket policy that allows get on all the files was used however in a professional setting a more secure policy can be deployed.
 
